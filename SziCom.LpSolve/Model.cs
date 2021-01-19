@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SziCom.LpSolve
 {
-    public class Modelo
+    public class Model
     {
         private readonly Dictionary<int, AbstractVariable> Variables = new Dictionary<int, AbstractVariable>();
         public LinearOptimizacionFunction Objetivo { get; private set; }
@@ -58,6 +58,10 @@ namespace SziCom.LpSolve
         {
             this.Objetivo = new LinearOptimizacionFunction(term, nombreRestriccion, funcion);
         }
+        public void AddObjetiveFuction(Term term, LinearOptmizationType funcion)
+        {
+            this.Objetivo = new LinearOptimizacionFunction(term, "OptimizationFunctionName", funcion);
+        }
 
         public void AddRestriction(FinalTerm terms, string nombreRestriccion)
         {
@@ -90,7 +94,7 @@ namespace SziCom.LpSolve
                 AddRestrictions(lp);
                 RenameLPSolveColumns(lp);
                 AddObjetiveFunction(lp);
-                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective(), 2));
+                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective()/scale, 2));
                 Double[] result = new Double[lp.get_Ncolumns()];
                 Double[] from = new Double[lp.get_Ncolumns()];
                 Double[] till = new Double[lp.get_Ncolumns()];

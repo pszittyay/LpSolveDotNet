@@ -10,7 +10,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void SimpleExample()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var x = m.AddNewVariable<string>("", "X");
             var y = m.AddNewVariable<string>("", "Y");
 
@@ -38,7 +38,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void ScalingExample()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var x = m.AddNewVariable<string>("", "X");
             var y = m.AddNewVariable<string>("", "Y");
 
@@ -66,7 +66,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void SumExample()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var x = m.AddNewVariables<string>(new List<string>() { "" }, (t) => "X");
             var y = m.AddNewVariable<string>("Hola", "Y", (t, resultado) => System.Diagnostics.Debug.WriteLine(t + resultado));
 
@@ -102,31 +102,32 @@ namespace UnitTestProject1
         [TestMethod]
         public void VariableExample()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
 
             Pants pant = new Pants() { Name = "Foo Pants" };
             Jackets jacket = new Jackets() { Name = "Bar Jackets" };
 
-            var x = m.AddNewVariable<Pants>(pant, p => p.Name, (p, result) => p.OptimalValue = result);
+            var x = m.AddNewVariable<Pants>(pant, p => p.Name, (p, result) => p.OptimalValue = result, (p, till, from) => { p.Till = till; p.From = from; });
             var y = m.AddNewVariable<Jackets>(jacket, j => j.Name, (j, result) => j.OptimalValue = result);
 
 
 
-            var objetivo = 20000 * x + 15000 * y;
+            var objetive = 50 * x + 40 * y;
 
-            m.AddRestriction(x >= 0, "R1");
-            m.AddRestriction(y >= 0, "R2");
+            m.AddRestriction(x >= 0, "Positive Pant");
+            m.AddRestriction(y >= 0, "Positive Jackets");
 
-            m.AddRestriction(x + 1.5 * y <= 750, "R3");
-            m.AddRestriction(2 * x + 3 * y <= 1500, "R3");
-            m.AddRestriction(2 * x + y <= 1000, "R3");
-            m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
+            m.AddRestriction(x + 1.5 * y <= 750, "Contton Textile");
+            m.AddRestriction(2 * x + y <= 1000, "Polyester");
+            m.AddObjetiveFuction(objetive, LinearOptmizationType.Maximizar);
 
-            m.Run(1000);
+            var r  = m.Run(1000);
 
 
             Assert.AreEqual(375, pant.OptimalValue, 0.1);
             Assert.AreEqual(250, jacket.OptimalValue, 0.1);
+
+            Assert.AreEqual(28750, r.OptimizationFunctionResult, 0.1);
         }
     }
 }

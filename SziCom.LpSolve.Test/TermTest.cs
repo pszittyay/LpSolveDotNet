@@ -9,7 +9,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void Sumar()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var a = m.AddNewVariable<string>("", "A");
             var b = m.AddNewVariable<string>("", "b");
 
@@ -24,7 +24,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void Restar()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var a = m.AddNewVariable<string>("", "A");
             var b = m.AddNewVariable<string>("", "b");
 
@@ -40,7 +40,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void Multiplicar()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var a = m.AddNewVariable<string>("", "A");
 
             Term Ta = new Term(a);
@@ -54,7 +54,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void Dividir()
         {
-            Modelo m = new Modelo();
+            Model m = new Model();
             var a = m.AddNewVariable<string>("", "A");
 
             Term Ta = new Term(a);
