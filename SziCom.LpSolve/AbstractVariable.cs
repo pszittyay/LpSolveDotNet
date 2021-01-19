@@ -13,6 +13,12 @@ namespace SziCom.LpSolve
             this.Name = name;
         }
 
+        protected AbstractVariable(int index, Func<string> name)
+        {
+            this.Index = index;
+            this.Name = name();
+        }
+
         internal virtual void SetResult(double result, double from, double till)
         {
             this.Result = result;

@@ -20,12 +20,20 @@ namespace SziCom.LpSolve
             Variables.Add(variable.Index, variable);
             return variable;
         }
-        public Variable<T> AddNewVariable<T>(T valueObject, Func<T, string> nombre, Action<T, double> bind) where T : class
+
+        public Variable<T> AddNewVariable<T>(T valueObject, Func<T,string> nombre, Action<T, double> bind) where T : class
         {
             var variable = new Variable<T>(valueObject, bind, ++VariablesIndex, nombre(valueObject));
             Variables.Add(variable.Index, variable);
             return variable;
         }
+        public Variable<T> AddNewVariable<T>(T valueObject, Func<T, string> nombre, Action<T, double> result, Action<T,double ,double> tillFrom ) where T : class
+        {
+            var variable = new Variable<T>(valueObject, result, tillFrom, ++VariablesIndex, nombre);
+            Variables.Add(variable.Index, variable);
+            return variable;
+        }
+
 
         public Variable<T> AddNewVariable<T>(T valueObject, string nombre) where T : class
         {
@@ -98,7 +106,7 @@ namespace SziCom.LpSolve
             }
         }
 
-        
+
 
         private void RenameLPSolveColumns(LpSolveDotNet.LpSolve lp)
         {

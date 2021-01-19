@@ -52,7 +52,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Jackets.cs" />
     <Compile Include="ModeloTest.cs" />
+    <Compile Include="Pants.cs" />
     <Compile Include="TermTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VariableTest.cs" />

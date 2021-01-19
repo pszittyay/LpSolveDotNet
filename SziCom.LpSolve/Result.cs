@@ -8,6 +8,7 @@
             OptimizationFunctionResult = costoTotal;
         }
 
+        
         public SolutionResult Tipo { get; private set; }
         public double OptimizationFunctionResult { get; private set; }
     }

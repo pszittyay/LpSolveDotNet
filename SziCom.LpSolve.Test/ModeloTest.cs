@@ -98,5 +98,35 @@ namespace UnitTestProject1
 
             Assert.AreEqual(30.0, y.Result, 0.1);
         }
+
+        [TestMethod]
+        public void VariableExample()
+        {
+            Modelo m = new Modelo();
+
+            Pants pant = new Pants() { Name = "Foo Pants" };
+            Jackets jacket = new Jackets() { Name = "Bar Jackets" };
+
+            var x = m.AddNewVariable<Pants>(pant, p => p.Name, (p, result) => p.OptimalValue = result);
+            var y = m.AddNewVariable<Jackets>(jacket, j => j.Name, (j, result) => j.OptimalValue = result);
+
+
+
+            var objetivo = 20000 * x + 15000 * y;
+
+            m.AddRestriction(x >= 0, "R1");
+            m.AddRestriction(y >= 0, "R2");
+
+            m.AddRestriction(x + 1.5 * y <= 750, "R3");
+            m.AddRestriction(2 * x + 3 * y <= 1500, "R3");
+            m.AddRestriction(2 * x + y <= 1000, "R3");
+            m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
+
+            m.Run(1000);
+
+
+            Assert.AreEqual(375, pant.OptimalValue, 0.1);
+            Assert.AreEqual(250, jacket.OptimalValue, 0.1);
+        }
     }
 }
