@@ -53,6 +53,30 @@ namespace SziCom.LpSolve
             }
             return result;
         }
+        public IEnumerable<Variable<T>> AddNewVariables<T>(IEnumerable<T> collection, Func<T, string> nameFunction, Action<T, double> bindResult)
+        {
+            var result = new List<Variable<T>>();
+            foreach (var item in collection)
+            {
+                var variable = new Variable<T>(item, bindResult, ++VariablesIndex, nameFunction(item));
+                Variables.Add(variable.Index, variable);
+                result.Add(variable);
+            }
+            return result;
+        }
+
+        public IEnumerable<Variable<T>> AddNewVariables<T>(IEnumerable<T> collection, Func<T, string> nameFunction, Action<T, double> bindResult, Action<T, double, double> tillFrom)
+        {
+            var result = new List<Variable<T>>();
+            foreach (var item in collection)
+            {
+                var variable = new Variable<T>(item, bindResult,tillFrom, ++VariablesIndex, nameFunction(item));
+                Variables.Add(variable.Index, variable);
+                result.Add(variable);
+            }
+            return result;
+        }
+
 
         public void AddObjetiveFuction(Term term, string nombreRestriccion, LinearOptmizationType funcion)
         {
