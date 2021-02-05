@@ -91,10 +91,12 @@ namespace SziCom.LpSolve
 
                 lp.set_scaling(lpsolve_scale_algorithm.SCALE_EXTREME, lpsolve_scale_parameters.SCALE_EQUILIBRATE);
 
-                AddRestrictions(lp);
+                AddRestrictions(lp, scale);
                 RenameLPSolveColumns(lp);
-                AddObjetiveFunction(lp);
-                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective()/scale, 2));
+                AddObjetiveFunction(lp, scale);
+                ///Importante: El resultado no se escala, porque al escalar los coeficientes de las variables 
+                ///y de la fucion objetivo, el resutaldo de la funcion objetivo ya esta correcto.
+                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective() , 2));
                 Double[] result = new Double[lp.get_Ncolumns()];
                 Double[] from = new Double[lp.get_Ncolumns()];
                 Double[] till = new Double[lp.get_Ncolumns()];
@@ -129,12 +131,12 @@ namespace SziCom.LpSolve
         {
             return new Term(variables.Where(conditional).ToDictionary(v => (AbstractVariable)v, v => 1.0));
         }
-        private void AddObjetiveFunction(LpSolveDotNet.LpSolve lp)
+        private void AddObjetiveFunction(LpSolveDotNet.LpSolve lp, double scale)
         {
-            Int32[] variables = Objetivo.FunctionTerm.Keys.Select(k => k.Index).ToArray();
-            Double[] coeficientes = Objetivo.FunctionTerm.Values.ToArray();
+            Int32[] variables = Objetivo.FunctionTerm.GetVariables();
+            Double[] coeficientes = Objetivo.FunctionTerm.GetCoeficientes().Select(c=>c/scale).ToArray();
 
-            if (!lp.set_obj_fnex(Objetivo.FunctionTerm.Keys.Count, coeficientes, variables))
+            if (!lp.set_obj_fnex(Objetivo.FunctionTerm.Count, coeficientes, variables))
             {
                 throw new LpSolveExeption($"Restricciones Factory: Error al agregar la restriccion: {Objetivo.Name}");
             }
@@ -146,14 +148,14 @@ namespace SziCom.LpSolve
             if (Objetivo.Tipo == LinearOptmizationType.Minimizar) lp.set_minim();
         }
 
-        private void AddRestrictions(LpSolveDotNet.LpSolve lp)
+        private void AddRestrictions(LpSolveDotNet.LpSolve lp, double scale)
         {
             foreach (var r in Restricciones)
             {
-                Int32[] variables = r.Termino.Keys.Select(k => k.Index).ToArray();
-                Double[] coeficientes = r.Termino.Values.Select(t => t / Scale).ToArray();
+                Int32[] variables = r.Termino.GetVariables();
+                Double[] coeficientes = r.Termino.GetCoeficientes().Select(t=>t / scale).ToArray();
 
-                if (!lp.add_constraintex(r.Termino.Keys.Count, coeficientes, variables, ToLpSolveContraintType(r.Termino.Restriction), r.Termino.RestrictionValue))
+                if (!lp.add_constraintex(r.Termino.Count, coeficientes, variables, ToLpSolveContraintType(r.Termino.Restriction), r.Termino.RestrictionValue))
                 {
                     throw new LpSolveExeption($"Restricciones Factory: Error al agregar la restriccion: {r.Nombre}");
                 }

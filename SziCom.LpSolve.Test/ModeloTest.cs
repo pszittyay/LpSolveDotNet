@@ -57,7 +57,7 @@ namespace UnitTestProject1
 
             m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
 
-            m.Run(1000);
+            m.Run();
 
             Assert.AreEqual(20.0, x.Result, 0.1);
             Assert.AreEqual(30.0, y.Result, 0.1);
@@ -120,8 +120,7 @@ namespace UnitTestProject1
             m.AddRestriction(x + 1.5 * y <= 750, "Contton Textile");
             m.AddRestriction(2 * x + y <= 1000, "Polyester");
             m.AddObjetiveFuction(objetive, LinearOptmizationType.Maximizar);
-
-            var r  = m.Run(1000);
+            var r  = m.Run(100);
 
 
             Assert.AreEqual(375, pant.OptimalValue, 0.1);

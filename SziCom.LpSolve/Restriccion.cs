@@ -1,6 +1,6 @@
 ﻿namespace SziCom.LpSolve
 {
-    public class Restriccion
+    public class Restriccion 
     {
         public FinalTerm Termino { get; private set; }
         public string Nombre { get; private set; }

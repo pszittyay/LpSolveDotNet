@@ -28,7 +28,7 @@ namespace UnitTestProject1
             var Tc = a - b;
 
             Assert.AreEqual(2,Tc.Count );
-            Assert.AreEqual(Tc[b], -1);
+            
         }
     }
 }

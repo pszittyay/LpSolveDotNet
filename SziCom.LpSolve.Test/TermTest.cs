@@ -18,7 +18,8 @@ namespace UnitTestProject1
 
             Term Tc = Ta + Tb;
 
-            Assert.AreEqual(Tc.Count, 2);
+            Assert.AreEqual(Tc.Count, 2); 
+            Assert.AreEqual(1, Tb.GetFactor(b));
         }
 
         [TestMethod]
@@ -34,7 +35,7 @@ namespace UnitTestProject1
             var Tc = Ta - Tb;
 
             Assert.AreEqual(2, Tc.Count);
-            Assert.AreEqual(Tc[b], -1);
+            Assert.AreEqual(-1, Tc.GetFactor(b));
         }
 
         [TestMethod]
@@ -48,7 +49,7 @@ namespace UnitTestProject1
             var Tc = Ta * 5;
 
             Assert.AreEqual(Tc.Count, 1);
-            Assert.AreEqual(Tc[a], 5);
+            Assert.AreEqual(Tc.GetFactor(a), 5);
         }
 
         [TestMethod]
@@ -62,7 +63,7 @@ namespace UnitTestProject1
             var Tc = Ta / 5;
 
             Assert.AreEqual(1, Tc.Count);
-            Assert.AreEqual(0.2, Tc[a]);
+            Assert.AreEqual(0.2, Tc.GetFactor(a));
         }
     }
 }

@@ -4,18 +4,28 @@ using System.Linq;
 
 namespace SziCom.LpSolve
 {
-    public class Term : Dictionary<AbstractVariable, double>
+    public class Term
     {
+        private Dictionary<AbstractVariable, double> innerDictionary = new Dictionary<AbstractVariable, double>();
+
+        internal Dictionary<AbstractVariable, double> GetDictionary() => this.innerDictionary;
         internal Term(AbstractVariable v)
         {
-            Add(v, 1);
+            innerDictionary.Add(v, 1);
         }
-
+        public  Term()
+        {
+            
+        }
+        internal Term(Term a)
+        {
+            this.innerDictionary = a.GetDictionary();
+        }
         internal Term(Dictionary<AbstractVariable, double> a)
         {
             foreach (var item in a)
             {
-                Add(item.Key, item.Value);
+                innerDictionary.Add(item.Key, item.Value);
             }
         }
 
@@ -23,43 +33,43 @@ namespace SziCom.LpSolve
         {
             foreach (var itemA in a)
             {
-                Add(itemA.Key, itemA.Value);
+                innerDictionary.Add(itemA.Key, itemA.Value);
             }
 
             foreach (var itemB in b)
             {
-                Add(itemB.Key, itemB.Value);
+                innerDictionary.Add(itemB.Key, itemB.Value);
             }
         }
 
         public static Term operator +(Term a, Term b)
         {
-            return new Term(a, b);
+            return new Term(a.GetDictionary(), b.GetDictionary());
         }
 
         public static Term operator -(Term a, Term b)
         {
-            return new Term(a, b.ToDictionary(k => k.Key, v => v.Value * -1));
+            return new Term(a.GetDictionary(), b.GetDictionary().ToDictionary(k => k.Key, v => v.Value * -1));
         }
 
         public static Term operator *(Term a, double coeficiente)
         {
-            return new Term(a.ToDictionary(k => k.Key, v => v.Value * coeficiente));
+            return new Term(a.GetDictionary().ToDictionary(k => k.Key, v => v.Value * coeficiente));
         }
 
         public static Term operator *(double coeficiente, Term a)
         {
-            return new Term(a.ToDictionary(k => k.Key, v => v.Value * coeficiente));
+            return new Term(a.GetDictionary().ToDictionary(k => k.Key, v => v.Value * coeficiente));
         }
 
         public static Term operator /(Term a, double coeficiente)
         {
-            return new Term(a.ToDictionary(k => k.Key, v => v.Value / coeficiente));
+            return new Term(a.GetDictionary().ToDictionary(k => k.Key, v => v.Value / coeficiente));
         }
 
         public static Term operator /(double coeficiente, Term a)
         {
-            return new Term(a.ToDictionary(k => k.Key, v => v.Value / coeficiente));
+            return new Term(a.GetDictionary().ToDictionary(k => k.Key, v => v.Value / coeficiente));
         }
 
         public static FinalTerm operator >=(Term a, double valor)
@@ -102,9 +112,17 @@ namespace SziCom.LpSolve
             throw new NotImplementedException();
         }
 
-        //public static implicit operator Term(AbstractVariable v)
-        //{
-        //    return new Term(v);
-        //}
+        internal Int32[] GetVariables()
+        {
+            return innerDictionary.Keys.Select(k => k.Index).ToArray();
+        }
+        internal Double[] GetCoeficientes()
+        {
+            return innerDictionary.Values.ToArray();
+        }
+
+        internal Int32 Count => innerDictionary.Count;
+
+        internal double GetFactor(AbstractVariable var) => innerDictionary[var];
     }
 }
