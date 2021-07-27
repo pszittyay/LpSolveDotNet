@@ -12,8 +12,13 @@ namespace SziCom.LpSolve
         public List<Restriccion> Restricciones { get; private set; } = new List<Restriccion>();
         public int RestrictionIndex { get; private set; } = 1;
         public int VariablesIndex { get; private set; }
-        private double Scale { get; set; }
 
+        public Variable<T> AddNewVariable<T>(T valueObject, string nombre, Action<T, double> bind, bool binary = false) where T : class
+        {
+            var variable = new Variable<T>(valueObject, bind, ++VariablesIndex, nombre, binary);
+            Variables.Add(variable.Index, variable);
+            return variable;
+        }
         public Variable<T> AddNewVariable<T>(T valueObject, string nombre, Action<T, double> bind) where T : class
         {
             var variable = new Variable<T>(valueObject, bind, ++VariablesIndex, nombre);
@@ -21,13 +26,13 @@ namespace SziCom.LpSolve
             return variable;
         }
 
-        public Variable<T> AddNewVariable<T>(T valueObject, Func<T,string> nombre, Action<T, double> bind) where T : class
+        public Variable<T> AddNewVariable<T>(T valueObject, Func<T, string> nombre, Action<T, double> bind) where T : class
         {
             var variable = new Variable<T>(valueObject, bind, ++VariablesIndex, nombre(valueObject));
             Variables.Add(variable.Index, variable);
             return variable;
         }
-        public Variable<T> AddNewVariable<T>(T valueObject, Func<T, string> nombre, Action<T, double> result, Action<T,double ,double> tillFrom ) where T : class
+        public Variable<T> AddNewVariable<T>(T valueObject, Func<T, string> nombre, Action<T, double> result, Action<T, double, double> tillFrom) where T : class
         {
             var variable = new Variable<T>(valueObject, result, tillFrom, ++VariablesIndex, nombre);
             Variables.Add(variable.Index, variable);
@@ -35,9 +40,9 @@ namespace SziCom.LpSolve
         }
 
 
-        public Variable<T> AddNewVariable<T>(T valueObject, string nombre) where T : class
+        public Variable<T> AddNewVariable<T>(T valueObject, string nombre, bool binary = false) where T : class
         {
-            var variable = new Variable<T>(valueObject, ++VariablesIndex, nombre);
+            var variable = new Variable<T>(valueObject, ++VariablesIndex, nombre, binary);
             Variables.Add(variable.Index, variable);
             return variable;
         }
@@ -70,7 +75,7 @@ namespace SziCom.LpSolve
             var result = new List<Variable<T>>();
             foreach (var item in collection)
             {
-                var variable = new Variable<T>(item, bindResult,tillFrom, ++VariablesIndex, nameFunction(item));
+                var variable = new Variable<T>(item, bindResult, tillFrom, ++VariablesIndex, nameFunction(item));
                 Variables.Add(variable.Index, variable);
                 result.Add(variable);
             }
@@ -102,13 +107,13 @@ namespace SziCom.LpSolve
 
         public Term Restar<T>(IEnumerable<Variable<T>> variables)
         {
-            return new Term(variables.ToDictionary(v => (AbstractVariable)v, v => -1.0));
+            return new Term(variables.ToDictionary(v => (AbstractVariable)v, v => new InternalFactor(-1.0)));
         }
 
         public Result Run(double scale = 1.0)
         {
             LpSolveDotNet.LpSolve.Init();
-            this.Scale = scale;
+
 
             using (LpSolveDotNet.LpSolve lp = LpSolveDotNet.LpSolve.make_lp(0, VariablesIndex))
             {
@@ -118,9 +123,11 @@ namespace SziCom.LpSolve
                 AddRestrictions(lp, scale);
                 RenameLPSolveColumns(lp);
                 AddObjetiveFunction(lp, scale);
+                SetBinaryVaraibles(lp);
+
                 ///Importante: El resultado no se escala, porque al escalar los coeficientes de las variables 
                 ///y de la fucion objetivo, el resutaldo de la funcion objetivo ya esta correcto.
-                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective() , 2));
+                var r = new Result(ToLpSolveContraintType(lp.solve()), Math.Round(lp.get_objective(), 2));
                 Double[] result = new Double[lp.get_Ncolumns()];
                 Double[] from = new Double[lp.get_Ncolumns()];
                 Double[] till = new Double[lp.get_Ncolumns()];
@@ -136,7 +143,14 @@ namespace SziCom.LpSolve
             }
         }
 
+        private void SetBinaryVaraibles(LpSolveDotNet.LpSolve lp)
+        {
 
+            foreach (var v in Variables.Where(t => t.Value.Binary))
+            {
+                lp.set_binary(v.Key, true);
+            }
+        }
 
         private void RenameLPSolveColumns(LpSolveDotNet.LpSolve lp)
         {
@@ -148,17 +162,17 @@ namespace SziCom.LpSolve
 
         public Term Sum<T>(IEnumerable<Variable<T>> variables)
         {
-            return new Term(variables.ToDictionary(v => (AbstractVariable)v, v => 1.0));
+            return new Term(variables.ToDictionary(v => (AbstractVariable)v, v => new InternalFactor()));
         }
 
         public Term SumWhere<T>(Func<Variable<T>, bool> conditional, IEnumerable<Variable<T>> variables)
         {
-            return new Term(variables.Where(conditional).ToDictionary(v => (AbstractVariable)v, v => 1.0));
+            return new Term(variables.Where(conditional).ToDictionary(v => (AbstractVariable)v, v => new InternalFactor()));
         }
         private void AddObjetiveFunction(LpSolveDotNet.LpSolve lp, double scale)
         {
             Int32[] variables = Objetivo.FunctionTerm.GetVariables();
-            Double[] coeficientes = Objetivo.FunctionTerm.GetCoeficientes().Select(c=>c/scale).ToArray();
+            Double[] coeficientes = Objetivo.FunctionTerm.GetCoeficientes().Select(c => c / scale).ToArray();
 
             if (!lp.set_obj_fnex(Objetivo.FunctionTerm.Count, coeficientes, variables))
             {
@@ -177,9 +191,9 @@ namespace SziCom.LpSolve
             foreach (var r in Restricciones)
             {
                 Int32[] variables = r.Termino.GetVariables();
-                Double[] coeficientes = r.Termino.GetCoeficientes().Select(t=>t / scale).ToArray();
+                Double[] coeficientes = r.Termino.GetCoeficientes().Select(t => t / scale).ToArray();
 
-                if (!lp.add_constraintex(r.Termino.Count, coeficientes, variables, ToLpSolveContraintType(r.Termino.Restriction), r.Termino.RestrictionValue))
+                if (!lp.add_constraintex(r.Termino.Count, coeficientes, variables, ToLpSolveContraintType(r.Termino.Restriction), r.Termino.RestrictionValue - r.Termino.GetAdding()))
                 {
                     throw new LpSolveExeption($"Restricciones Factory: Error al agregar la restriccion: {r.Nombre}");
                 }

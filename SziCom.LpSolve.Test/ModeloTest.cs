@@ -35,6 +35,61 @@ namespace UnitTestProject1
             Assert.AreEqual(30.0, y.Result, 0.1);
         }
 
+
+        [TestMethod]
+        public void SimpleExampleWithSumConstantes()
+        {
+            Model m = new Model();
+            var x = m.AddNewVariable<string>("", "X");
+            var y = m.AddNewVariable<string>("", "Y");
+
+            var r1 = x + 2.0 * y + 10 <= 90;
+            var r2 = 3 * x + 2 * y <= 120;
+
+            var r3 = x >= 0;
+            var r4 = y >= 0;
+
+            var objetivo = 20 * x + 15 * y;
+
+            m.AddRestriction(r1, "R1");
+            m.AddRestriction(r2, "R1");
+            m.AddRestriction(r3, "R1");
+            m.AddRestriction(r4, "R1");
+
+            m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
+
+            m.Run();
+
+            Assert.AreEqual(20, x.Result, .1);
+            Assert.AreEqual(30, y.Result, .1);
+        }
+        [TestMethod]
+        public void SimpleExampleWithRestaConstantes()
+        {
+            Model m = new Model();
+            var x = m.AddNewVariable<string>("", "X");
+            var y = m.AddNewVariable<string>("", "Y");
+
+            var r1 = x + 2.0 * y - 5 <= 75;
+            var r2 = 3 * x + 2 * y <= 120;
+
+            var r3 = x >= 0;
+            var r4 = y >= 0;
+
+            var objetivo = 20 * x + 15 * y;
+
+            m.AddRestriction(r1, "R1");
+            m.AddRestriction(r2, "R1");
+            m.AddRestriction(r3, "R1");
+            m.AddRestriction(r4, "R1");
+
+            m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
+
+            m.Run();
+
+            Assert.AreEqual(20, x.Result, .1);
+            Assert.AreEqual(30, y.Result, .1);
+        }
         [TestMethod]
         public void ScalingExample()
         {
@@ -57,7 +112,7 @@ namespace UnitTestProject1
 
             m.AddObjetiveFuction(objetivo, "Max", LinearOptmizationType.Maximizar);
 
-            m.Run();
+            m.Run(100);
 
             Assert.AreEqual(20.0, x.Result, 0.1);
             Assert.AreEqual(30.0, y.Result, 0.1);
@@ -99,6 +154,7 @@ namespace UnitTestProject1
             Assert.AreEqual(30.0, y.Result, 0.1);
         }
 
+
         [TestMethod]
         public void VariableExample()
         {
@@ -120,13 +176,43 @@ namespace UnitTestProject1
             m.AddRestriction(x + 1.5 * y <= 750, "Contton Textile");
             m.AddRestriction(2 * x + y <= 1000, "Polyester");
             m.AddObjetiveFuction(objetive, LinearOptmizationType.Maximizar);
-            var r  = m.Run(100);
+            var r = m.Run(100);
 
 
             Assert.AreEqual(375, pant.OptimalValue, 0.1);
             Assert.AreEqual(250, jacket.OptimalValue, 0.1);
 
             Assert.AreEqual(28750, r.OptimizationFunctionResult, 0.1);
+        }
+
+        [TestMethod]
+        public void BinaryExample()
+        {
+            Model m = new Model();
+
+
+            var x = m.AddNewVariable<string>("X", "X");
+            var y = m.AddNewVariable<string>("Y", "Y");
+            var binaryX = m.AddNewVariable<string>("B", "B", true);
+            var binaryY = m.AddNewVariable<string>("B", "B", true);
+
+            var objetive = 1.5 * x + 2 * y;
+
+            m.AddRestriction(x <= 300, "");
+            m.AddRestriction(y <= 300, "");
+
+            m.AddRestriction(x - 1000 * binaryX <= 0, "Contton Textile");
+            m.AddRestriction(x + 1000 * binaryY >= 10, "Polyester");
+            m.AddRestriction(binaryX + binaryY == 1, "Polyester");
+            m.AddObjetiveFuction(objetive, LinearOptmizationType.Maximizar);
+            var r = m.Run();
+
+
+            Assert.AreEqual(SolutionResult.OPTIMAL, r.Tipo);
+            Assert.AreEqual(0, x.Result);
+            Assert.AreEqual(300, y.Result);
+            Assert.AreEqual(0, binaryX.Result);
+            Assert.AreEqual(1, binaryY.Result);
         }
     }
 }

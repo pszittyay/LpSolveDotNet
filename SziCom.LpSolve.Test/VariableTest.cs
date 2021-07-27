@@ -15,7 +15,7 @@ namespace UnitTestProject1
 
             Term Tc = a + b;
 
-            Assert.AreEqual(Tc.Count, 2);
+            Assert.AreEqual(2, Tc.Count);
         }
 
         [TestMethod]
@@ -27,8 +27,20 @@ namespace UnitTestProject1
 
             var Tc = a - b;
 
-            Assert.AreEqual(2,Tc.Count );
+            Assert.AreEqual(2, Tc.Count);
+
+        }
+        [TestMethod]
+        public void Boolean()
+        {
+            Model m = new Model();
+            var a = m.AddNewVariable<string>("", "Bool", true);
+            var b = m.AddNewVariable<string>("", "b");
+
+            var Tc = a - b;
             
+            Assert.AreEqual(2, Tc.Count);
+            Assert.IsTrue(a.Binary);
         }
     }
 }

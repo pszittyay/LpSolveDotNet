@@ -18,9 +18,10 @@ namespace UnitTestProject1
 
             Term Tc = Ta + Tb;
 
-            Assert.AreEqual(Tc.Count, 2); 
+            Assert.AreEqual(2, Tc.Count);
             Assert.AreEqual(1, Tb.GetFactor(b));
         }
+       
 
         [TestMethod]
         public void Restar()

@@ -7,16 +7,18 @@ namespace SziCom.LpSolve
         public int Index { get; }
         public string Name { get; }
 
-        protected AbstractVariable(int index, string name)
+        protected AbstractVariable(int index, string name, bool binary = false)
         {
             this.Index = index;
             this.Name = name;
+            this.Binary = binary;
         }
 
-        protected AbstractVariable(int index, Func<string> name)
+        protected AbstractVariable(int index, Func<string> name, bool binary = false)
         {
             this.Index = index;
             this.Name = name();
+            this.Binary = binary;
         }
 
         internal virtual void SetResult(double result, double from, double till)
@@ -24,13 +26,15 @@ namespace SziCom.LpSolve
             this.Result = result;
             this.From = from;
             this.Till = till;
+            
         }
 
         public double Result { get; private set; }
         public double Till { get; private set; }
         public double From { get; private set; }
 
-
+        public bool Binary { get; private set; }
+        
         public static Term operator +(AbstractVariable a, AbstractVariable b)
         {
             return (Term) a + (Term)b;
