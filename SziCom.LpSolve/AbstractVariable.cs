@@ -40,11 +40,44 @@ namespace SziCom.LpSolve
             return (Term) a + (Term)b;
         }
 
+        public static Term operator +(double a, AbstractVariable b)
+        {
+            return a + (Term)b;
+        }
+
+        public static Term operator +(AbstractVariable a, double b)
+        {
+            return (Term)a + b;
+        }
+        public static Term operator +(int a, AbstractVariable b)
+        {
+            return a + (Term)b;
+        }
+
+        public static Term operator +(AbstractVariable a, int b)
+        {
+            return (Term)a + b;
+        }
         public static Term operator -(AbstractVariable a, AbstractVariable b)
         {
             return (Term)a - (Term)b;
         }
-
+        public static Term operator -(double a, AbstractVariable b)
+        {
+            return a - (Term)b;
+        }
+        public static Term operator -(AbstractVariable a, double b)
+        {
+            return (Term)a - b;
+        }
+        public static Term operator -(int a, AbstractVariable b)
+        {
+            return a - (Term)b;
+        }
+        public static Term operator -(AbstractVariable a, int b)
+        {
+            return (Term)a - b;
+        }
         public static Term operator *(double a, AbstractVariable b)
         {
             return a * (Term)b;
