@@ -57,7 +57,15 @@ namespace SziCom.LpSolve
         {
             return b + a;
         }
-
+        public static Term operator +(Term a, int b)
+        {
+            a.Adding += b;
+            return a;
+        }
+        public static Term operator +(int a, Term b)
+        {
+            return b + a;
+        }
         public static Term operator -(Term a, Term b)
         {
             return new Term(a.GetDictionary(), b.GetDictionary().ToDictionary(k => k.Key, v => new InternalFactor(-1)));
@@ -71,7 +79,15 @@ namespace SziCom.LpSolve
         {
             return b + a;
         }
-
+        public static Term operator -(Term a, int b)
+        {
+            a.Adding -= b;
+            return a;
+        }
+        public static Term operator -(int a, Term b)
+        {
+            return b + a;
+        }
         public static Term operator *(Term a, double coeficiente)
         {
             return new Term(a.GetDictionary().ToDictionary(k => k.Key, v => new InternalFactor(v.Value.Factor * coeficiente)));
