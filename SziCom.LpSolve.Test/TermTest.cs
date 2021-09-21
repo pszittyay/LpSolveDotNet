@@ -53,6 +53,8 @@ namespace UnitTestProject1
             Assert.AreEqual(Tc.GetFactor(a), 5);
         }
 
+
+
         [TestMethod]
         public void Dividir()
         {
@@ -65,6 +67,21 @@ namespace UnitTestProject1
 
             Assert.AreEqual(1, Tc.Count);
             Assert.AreEqual(0.2, Tc.GetFactor(a));
+        }
+        [TestMethod]
+        public void MultiplicarDouble()
+        {
+            Model m = new Model();
+            var a = m.AddNewVariable<string>("A", "A");
+            var b = m.AddNewVariable<string>("B", "B");
+
+            Term t = new Term();
+
+            t += a;
+            t -= 0.5 * b;
+
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual(-0.5, t.GetFactor(b));
         }
     }
 }

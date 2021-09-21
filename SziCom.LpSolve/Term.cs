@@ -68,7 +68,7 @@ namespace SziCom.LpSolve
         }
         public static Term operator -(Term a, Term b)
         {
-            return new Term(a.GetDictionary(), b.GetDictionary().ToDictionary(k => k.Key, v => new InternalFactor(-1)));
+            return new Term(a.GetDictionary(), b.GetDictionary().ToDictionary(k => k.Key, v => new InternalFactor(-1.0 * v.Value.Factor)));
         }
         public static Term operator -(Term a, double b)
         {
