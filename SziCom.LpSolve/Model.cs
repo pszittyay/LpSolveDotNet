@@ -237,6 +237,7 @@ namespace SziCom.LpSolve
                 case lpsolve_return.USERABORT: return SolutionResult.USERABORT;
                 case lpsolve_return.TIMEOUT: return SolutionResult.TIMEOUT;
                 case lpsolve_return.PRESOLVED: return SolutionResult.PRESOLVED;
+                case lpsolve_return.ACCURACYERROR: return SolutionResult.ACCURACYERROR;
             }
             throw new InvalidOperationException();
         }
