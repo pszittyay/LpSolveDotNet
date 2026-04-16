@@ -1,4 +1,4 @@
-﻿using LpSolveDotNet;
+using LpSolveDotNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,7 +163,7 @@ namespace SziCom.LpSolve
 
                 foreach (var v in Variables)
                 {
-                    v.Value.SetResult(varResult[v.Key - 1] / scale,
+                    v.Value.SetResult(Math.Round(varResult[v.Key - 1]) / scale,
                                       varFrom[v.Key - 1] / scale,
                                       varTill[v.Key - 1] / scale,
                                       duals[lp.get_Nrows() + v.Key - 1] / scale,
