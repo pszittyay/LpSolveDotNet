@@ -137,7 +137,7 @@ namespace SziCom.LpSolve
 
                 foreach (var v in Variables)
                 {
-                    v.Value.SetResult(result[v.Key - 1] / scale, from[v.Key - 1] / scale, till[v.Key - 1] / scale);
+                    v.Value.SetResult(Math.Round(result[v.Key - 1]) / scale, from[v.Key - 1] / scale, till[v.Key - 1] / scale);
                 }
                 return r;
             }
